@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Flith Details</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+  <h1>Flight Details</h1>
+
+</div>
+
+
+<div class="container" style="margin-top: 3%">
+
+    <div style="margin-top: 5%">
+        <div class="row">
+          <div class="col-sm-6">
+            <h2>Flight: {{ flight.id }}</h2>
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <p>From: {{ flight.start_airport }}</p>
+                <p>Start Date: {{ flight.start_date }}</p>
+            </div>
+            <div class="col-sm-6">
+                <p>To: {{ flight.land_airport }}</p>
+                <p>Land Date: {{ flight.land_date }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Airplane: {{ flight.airplane.registration_number }}</p>
+            </div>
+            <div class="col-sm-6">
+                <p>Sets: {{ flight.airplane.seat_number }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <p>Passengers number: {{ flight.ticket_set.count }}</p>
+            </div>
+            <div class="col-sm-6">
+                <p>Free seats: {{ free_seats }}</p>
+            </div>
+        </div>
+
+    </div>
+
+    <button type="button" style="margin-top: 2%" class="btn btn-outline-primary">Add passanger</button>
+
+    <h2 style="margin-top: 2%">Passengers:</h2>
+
+    {% for ticket in ticekts %}
+    <div style="margin-bottom: 5%">
+        <div class="row">
+
+            <div class="col-sm-3">
+                <h3>{{ ticket.passanger.name }}</h3>
+            </div>
+
+            <div class="col-sm-3">
+                <h3>{{ ticket.passanger.surname }}</h3>
+            </div>
+
+            <div class="col-sm-6">
+                <h3>Luggage weight: {{ ticket.luggage_weight }}</h3>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>
