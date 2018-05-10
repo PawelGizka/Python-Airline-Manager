@@ -12,11 +12,28 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .models import Flight, Passanger, Ticket
+from django.utils.dateparse import parse_date
+from datetime import datetime
 # Get an instance of a logger
 
 def index(request):
-    all_flights = Flight.objects.all()
-    return render(request, 'flightmanager/index.html', {'flights': all_flights})
+    flights = Flight.objects
+    date_from = request.GET.getlist('date_from')
+    date_to = request.GET.getlist('date_to')
+
+    if date_from:
+        try:
+            flights = flights.filter(start_date__gte=datetime.strptime(date_from[0], '%Y-%m-%d'))
+        except (ValueError):
+            pass
+
+    if date_to:
+        try:
+            flights = flights.filter(start_date__lte=datetime.strptime(date_to[0], '%Y-%m-%d'))
+        except (ValueError):
+            pass
+
+    return render(request, 'flightmanager/index.html', {'flights': flights.all(), 'date_from': date_from, 'date_to': date_to})
 
 def flight_details(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)

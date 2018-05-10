@@ -11,6 +11,32 @@
 </head>
 <body>
 
+<script>
+function onSearchClick() {
+    var date_from = document.getElementById("date_from").value;
+    var date_to = document.getElementById("date_to").value;
+
+    var locationAddress = "{% url 'flightmanager:index' %}";
+    var isQuery = false;
+
+    if (date_from) {
+        isQuery = true;
+        locationAddress = locationAddress + "?date_from=" + date_from
+    }
+
+    if (date_to) {
+        if (isQuery) {
+            locationAddress = locationAddress + "&date_to=" + date_to
+        } else {
+            isQuery = true;
+            locationAddress = locationAddress + "?date_to=" + date_to
+        }
+    }
+
+    location.href=locationAddress
+}
+</script>
+
 <div class="jumbotron text-center">
   <h1>Flight Manager</h1>
   <button type="button" class="btn btn-primary">Login</button>
@@ -21,22 +47,31 @@
     <h3>Search For Flights:</h3>
 
     <div class="row">
-      <div class="col-sm-6">
-        <p>From:</p>
-        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-        <input name="start_date_0" class="vDateField" size="10" required="" id="id_start_date_0" type="text">
-      </div>
+        <div class="col-sm-6">
+            <p>Departure Date from:</p>
 
-      <div class="col-sm-6">
-        <p>To:</p>
-        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
-        <input name="start_date_0" class="vDateField" size="10" required="" id="id_start_date_0" type="text">
-      </div>
+            {% if date_from %}
+                <input name="date_from" id="date_from" type="date" value="{{ date_from.pop }}">
+            {% else %}
+                <input name="date_from" id="date_from" type="date">
+            {% endif %}
+        </div>
+
+        <div class="col-sm-6">
+            <p>Departure Date To:</p>
+
+            {% if date_to %}
+                <input name="date_to" id="date_to" type="date" value="{{ date_to.pop }}">
+            {% else %}
+                <input name="date_to" id="date_to" type="date">
+            {% endif %}
+
+        </div>
     </div>
 
     <div class="row">
         <div class="col-sm-4">
-            <button type="button" style="margin-top: 10%" class="btn btn-outline-secondary">Search</button>
+            <button type="button" onclick="onSearchClick()" style="margin-top: 10%" class="btn btn-outline-secondary">Search</button>
         </div>
     </div>
   </div>
