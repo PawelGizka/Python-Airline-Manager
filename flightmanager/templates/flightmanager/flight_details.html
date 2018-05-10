@@ -57,7 +57,8 @@
 
     </div>
 
-    <button type="button" style="margin-top: 2%" class="btn btn-outline-primary">Add passanger</button>
+    <button type="button" onclick="location.href='{% url 'flightmanager:add_passanger_form' flight.id %}' "
+            style="margin-top: 2%" class="btn btn-outline-primary">Add passanger</button>
 
     <h2 style="margin-top: 2%">Passengers:</h2>
 

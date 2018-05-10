@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Add passanger</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>Add passanger to flight {{ flight.id }}</h1>
+    <p>From {{ flight.start_airport }} to {{ flight.land_airport }}</p>
+</div>
+
+
+<div class="container" style="margin-top: 3%">
+
+
+    <form id="add_user" action="{% url 'flightmanager:add_passanger' flight.id %}" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+
+            <div class="col-sm-6">
+                <label for="sel1">Select Passanger:</label>
+            </div>
+
+            <div class="col-sm-6">
+                <select name="select" form="add_user">
+                {% for passanger in passangers %}
+                    <option value="{{ passanger.id }}">{{ passanger.name }} {{ passanger.surname }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-sm-6">
+                <label for="luggage_weight">Enter passanger luggane weight:</label>
+            </div>
+
+            <div class="col-sm-6">
+                <input name="luggage_weight" required="" id="luggage_weight" type="number">
+            </div>
+
+            <div class="col-sm-12">
+                <input type="submit" value="Add passanger" />
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>
