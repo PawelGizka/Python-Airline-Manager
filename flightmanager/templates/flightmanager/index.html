@@ -1,120 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Airline Manager</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-</head>
-<body>
+    <head>
 
-<script>
-function onSearchClick() {
-    var date_from = document.getElementById("date_from").value;
-    var date_to = document.getElementById("date_to").value;
+        <title>Airline Manager</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'flightmanager/index.css' %}" />
+        <script src="{% static 'flightmanager/index.js' %}"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    </head>
+    <body>
 
-    var locationAddress = "{% url 'flightmanager:index' %}";
-    var isQuery = false;
 
-    if (date_from) {
-        isQuery = true;
-        locationAddress = locationAddress + "?date_from=" + date_from
-    }
+    <div class="jumbotron text-center">
+        <h1>Flight Manager</h1>
 
-    if (date_to) {
-        if (isQuery) {
-            locationAddress = locationAddress + "&date_to=" + date_to
-        } else {
-            isQuery = true;
-            locationAddress = locationAddress + "?date_to=" + date_to
-        }
-    }
+        {% if is_user_authenticated %}
+            <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
+              class="btn btn-primary">Logout</button>
+        {% else %}
+            <button type="button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
+              class="btn btn-primary">Login</button>
+        {% endif %}
 
-    location.href=locationAddress
-}
-</script>
-
-<div class="jumbotron text-center">
-    <h1>Flight Manager</h1>
-
-    {% if is_user_authenticated %}
-        <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
-          class="btn btn-primary">Logout</button>
-    {% else %}
-        <button type="button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
-          class="btn btn-primary">Login</button>
-    {% endif %}
-
-</div>
-
-<div class="container">
-    <h3>Search For Flights:</h3>
-
-    <div class="row">
-        <div class="col-sm-6">
-            <p>Departure Date from:</p>
-
-            {% if date_from %}
-                <input name="date_from" id="date_from" type="date" value="{{ date_from.pop }}">
-            {% else %}
-                <input name="date_from" id="date_from" type="date">
-            {% endif %}
-        </div>
-
-        <div class="col-sm-6">
-            <p>Departure Date To:</p>
-
-            {% if date_to %}
-                <input name="date_to" id="date_to" type="date" value="{{ date_to.pop }}">
-            {% else %}
-                <input name="date_to" id="date_to" type="date">
-            {% endif %}
-
-        </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-4">
-            <button type="button" onclick="onSearchClick()" style="margin-top: 10%" class="btn btn-outline-secondary">Search</button>
-        </div>
-    </div>
-  </div>
-</div>
-
-<div class="container" style="margin-top: 3%">
-
-    {% for flight in flights %}
-    <div style="margin-top: 5%">
-        <div class="row">
-          <div class="col-sm-6">
-            <h3>Flight: {{ flight.id }}</h3>
-          </div>
-        </div>
+    <div class="container">
+        <h3>Search For Flights:</h3>
 
         <div class="row">
             <div class="col-sm-6">
-                <p>From: {{ flight.departure_airport }}</p>
-                <p>Start Date: {{ flight.departure_date }}</p>
+                <p>Departure Date from:</p>
+
+                {% if date_from %}
+                    <input name="date_from" id="date_from" type="date" value="{{ date_from.pop }}">
+                {% else %}
+                    <input name="date_from" id="date_from" type="date">
+                {% endif %}
             </div>
+
             <div class="col-sm-6">
-                <p>To: {{ flight.arrival_airport }}</p>
-                <p>Land Date: {{ flight.arrival_date }}</p>
+                <p>Departure Date To:</p>
+
+                {% if date_to %}
+                    <input name="date_to" id="date_to" type="date" value="{{ date_to.pop }}">
+                {% else %}
+                    <input name="date_to" id="date_to" type="date">
+                {% endif %}
+
             </div>
         </div>
 
         <div class="row">
-          <div class="col-sm-6">
-            <button type="button" onclick="location.href='{% url 'flightmanager:flight_details' flight.id %}' " class="btn btn-outline-info">Details</button>
-          </div>
+            <div class="col-sm-4">
+                <button type="button" id="search-button"
+                        onclick="onSearchClick()"  class="btn btn-outline-secondary">Search</button>
+            </div>
         </div>
+
+        {% for flight in flights %}
+        <div class="flight-box" >
+            <div class="row">
+              <div class="col-sm-6">
+                <h3>Flight: {{ flight.id }}</h3>
+              </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <p>From: {{ flight.departure_airport }}</p>
+                    <p>Start Date: {{ flight.departure_date }}</p>
+                </div>
+                <div class="col-sm-6">
+                    <p>To: {{ flight.arrival_airport }}</p>
+                    <p>Land Date: {{ flight.arrival_date }}</p>
+                </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" onclick="location.href='{% url 'flightmanager:flight_details' flight.id %}' "
+                        class="btn btn-outline-info">Details</button>
+              </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
     </div>
-    {% endfor %}
 
-
-</div>
-
-</body>
+    </body>
 </html>

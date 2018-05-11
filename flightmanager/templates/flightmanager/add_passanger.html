@@ -17,7 +17,7 @@
 </div>
 
 
-<div class="container" style="margin-top: 3%">
+<div class="container" >
 
 
     <form id="add_user" action="{% url 'flightmanager:add_passanger' flight.id %}" method="post">
@@ -26,11 +26,11 @@
         <div class="row">
 
             <div class="col-sm-6">
-                <label for="sel1">Select Passanger:</label>
+                <label for="select">Select Passanger:</label>
             </div>
 
             <div class="col-sm-6">
-                <select name="select" form="add_user">
+                <select name="select" id="select" form="add_user">
                 {% for passanger in passangers %}
                     <option value="{{ passanger.id }}">{{ passanger.name }} {{ passanger.surname }}</option>
                 {% endfor %}
