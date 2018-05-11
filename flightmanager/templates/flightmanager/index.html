@@ -38,8 +38,15 @@ function onSearchClick() {
 </script>
 
 <div class="jumbotron text-center">
-  <h1>Flight Manager</h1>
-  <button type="button" class="btn btn-primary">Login</button>
+    <h1>Flight Manager</h1>
+
+    {% if is_user_authenticated %}
+        <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
+          class="btn btn-primary">Logout</button>
+    {% else %}
+        <button type="button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
+          class="btn btn-primary">Login</button>
+    {% endif %}
 
 </div>
 

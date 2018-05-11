@@ -1,20 +1,19 @@
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from django.http import HttpResponse
 from django.db import transaction
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 from .models import Flight, Passanger, Ticket
-from django.utils.dateparse import parse_date
 from datetime import datetime
-# Get an instance of a logger
+
+import logging
+logger = logging.getLogger(__name__)
 
 def index(request):
     flights = Flight.objects
@@ -33,14 +32,21 @@ def index(request):
         except (ValueError):
             pass
 
-    return render(request, 'flightmanager/index.html', {'flights': flights.all(), 'date_from': date_from, 'date_to': date_to})
+    context = {'flights': flights.all(), 'is_user_authenticated': request.user.is_authenticated,
+               'date_from': date_from, 'date_to': date_to}
 
+    return render(request, 'flightmanager/index.html', context)
+
+@login_required
 def flight_details(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
     free_seats = flight.airplane.seat_number - flight.ticket_set.count()
     tickets = flight.ticket_set.all()
-    return render(request, 'flightmanager/flight_details.html', {'flight': flight, 'free_seats': free_seats, 'ticekts': tickets})
+    context = {'flight': flight, 'is_user_authenticated': request.user.is_authenticated,
+               'free_seats': free_seats, 'ticekts': tickets}
+    return render(request, 'flightmanager/flight_details.html', context)
 
+@login_required
 def add_passanger_form(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
     passangers = Passanger.objects.all()
@@ -49,6 +55,7 @@ def add_passanger_form(request, flight_id):
 def no_tickets(request):
     return render(request, 'flightmanager/no_tickets.html')
 
+@login_required
 @transaction.atomic
 def add_passanger(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
@@ -63,7 +70,37 @@ def add_passanger(request, flight_id):
         new_ticket.save()
         return HttpResponseRedirect(reverse('flightmanager:flight_details', args=(flight_id,)))
 
+def login_form(request):
+    next = request.GET.getlist('next')
+    return render(request, 'flightmanager/login.html', {'incorrect_login': False, 'next': next})
 
+def incorrect_login_form(request):
+    next = request.GET.getlist('next')
+    return render(request, 'flightmanager/login.html', {'incorrect_login': True, 'next': next})
+
+def do_login(request):
+    if 'username' in request.POST and 'password' in request.POST:
+        username = request.POST['username']
+        password = request.POST['password']
+        next = request.GET.getlist('next')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            if next:
+                return HttpResponseRedirect(next[0])
+            else:
+                return HttpResponseRedirect(reverse('flightmanager:index'))
+        else:
+            return HttpResponseRedirect(reverse('flightmanager:incorrect_login_form'))
+
+    else:
+        return HttpResponseBadRequest("request must contain username and password")
+
+
+
+def do_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('flightmanager:index'))
 
 
 
