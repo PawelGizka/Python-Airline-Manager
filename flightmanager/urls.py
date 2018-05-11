@@ -13,4 +13,5 @@ urlpatterns = [
     path('incorrect_login_form', views.incorrect_login_form, name='incorrect_login_form'),
     path('login', views.do_login, name='login'),
     path('logout', views.do_logout, name='logout'),
+    path('tickets_json', views.tickets_json, name='ticktes_json'),
 ]

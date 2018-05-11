@@ -4,7 +4,9 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 
+from django.core import serializers
 # Create your views here.
 from django.http import HttpResponse
 from django.db import transaction
@@ -43,7 +45,7 @@ def flight_details(request, flight_id):
     free_seats = flight.airplane.seat_number - flight.ticket_set.count()
     tickets = flight.ticket_set.all()
     context = {'flight': flight, 'is_user_authenticated': request.user.is_authenticated,
-               'free_seats': free_seats, 'ticekts': tickets}
+               'free_seats': free_seats, 'tickets': tickets}
     return render(request, 'flightmanager/flight_details.html', context)
 
 @login_required
@@ -66,7 +68,13 @@ def add_passanger(request, flight_id):
         passanger_id = request.POST['select']
         passanger = get_object_or_404(Passanger, pk=passanger_id)
         luggage_weight = request.POST['luggage_weight']
-        new_ticket = Ticket(flight_id=flight_id, passanger=passanger, luggage_weight=luggage_weight)
+        new_ticket = Ticket(flight_id=flight_id, passenger=passanger, luggage_weight=luggage_weight)
+
+        try:
+            new_ticket.full_clean()
+        except ValidationError as e:
+            return HttpResponseBadRequest(e.messages)
+
         new_ticket.save()
         return HttpResponseRedirect(reverse('flightmanager:flight_details', args=(flight_id,)))
 
@@ -101,6 +109,10 @@ def do_login(request):
 def do_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('flightmanager:index'))
+
+def tickets_json(request):
+    data = serializers.serialize("json", Ticket.objects.all())
+    return HttpResponse(data)
 
 
 
