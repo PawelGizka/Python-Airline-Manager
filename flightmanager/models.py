@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 class Airplane(models.Model):
     registration_number = models.CharField(max_length=10)
-    #max number of seats for aibus a380-800
+    #max number of seats for airbus a380-800
     seat_number = models.IntegerField(validators=[MaxValueValidator(615), MinValueValidator(1)])
 
     def __str__(self):

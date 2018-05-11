@@ -24,13 +24,13 @@ def index(request):
 
     if date_from:
         try:
-            flights = flights.filter(start_date__gte=datetime.strptime(date_from[0], '%Y-%m-%d'))
+            flights = flights.filter(departure_date__gte=datetime.strptime(date_from[0], '%Y-%m-%d'))
         except (ValueError):
             pass
 
     if date_to:
         try:
-            flights = flights.filter(start_date__lte=datetime.strptime(date_to[0], '%Y-%m-%d'))
+            flights = flights.filter(departure_date__lte=datetime.strptime(date_to[0], '%Y-%m-%d'))
         except (ValueError):
             pass
 
@@ -109,10 +109,6 @@ def do_login(request):
 def do_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('flightmanager:index'))
-
-def tickets_json(request):
-    data = serializers.serialize("json", Ticket.objects.all())
-    return HttpResponse(data)
 
 
 

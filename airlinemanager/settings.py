@@ -29,6 +29,8 @@ ALLOWED_HOSTS = []
 
 LOGIN_URL = '/airlinemanager/login_form'
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS=3000
+
 # Application definition
 
 INSTALLED_APPS = [
