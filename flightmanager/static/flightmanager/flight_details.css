@@ -1,5 +1,18 @@
 #flight-info {
     margin-top: 5%;
+    background-color: lightblue;
+    padding: 2%;
+    border-radius: 25px;
+}
+
+p {
+    font-size: 18px;
+    font-family: "DejaVu Sans";
+}
+
+.passenger-info-text {
+    font-size: 20px;
+    font-family: "DejaVu Sans";
 }
 
 #add-passenger-button {
@@ -8,8 +21,14 @@
 
 #passengers-header {
     margin-top: 5%;
+    padding: 2%;
 }
 
 .passenger-info {
-    margin-top: 5%
+    margin-top: 2%;
+    background-color: lightcyan;
+    padding: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    border-radius: 25px;
 }

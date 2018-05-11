@@ -17,50 +17,57 @@
 
 
     <div class="jumbotron text-center">
+
         <h1>Flight Manager</h1>
 
         {% if is_user_authenticated %}
             <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
-              class="btn btn-primary">Logout</button>
+              class="btn btn-primary ">Logout</button>
         {% else %}
             <button type="button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
-              class="btn btn-primary">Login</button>
+              class="btn btn-primary ">Login</button>
         {% endif %}
+
 
     </div>
 
     <div class="container">
-        <h3>Search For Flights:</h3>
 
-        <div class="row">
-            <div class="col-sm-6">
-                <p>Departure Date from:</p>
+        <div id="search-area">
+            <h3>Search For Flights:</h3>
 
-                {% if date_from %}
-                    <input name="date_from" id="date_from" type="date" value="{{ date_from.pop }}">
-                {% else %}
-                    <input name="date_from" id="date_from" type="date">
-                {% endif %}
+            <div class="row">
+                <div class="col-sm-6">
+                    <h5>Departure Date from:</h5>
+
+                    {% if date_from %}
+                        <input name="date_from" id="date_from" type="date" value="{{ date_from.pop }}">
+                    {% else %}
+                        <input name="date_from" id="date_from" type="date">
+                    {% endif %}
+                </div>
+
+                <div class="col-sm-6">
+                    <h5>Departure Date to:</h5>
+
+                    {% if date_to %}
+                        <input name="date_to" id="date_to" type="date" value="{{ date_to.pop }}">
+                    {% else %}
+                        <input name="date_to" id="date_to" type="date">
+                    {% endif %}
+
+                </div>
             </div>
 
-            <div class="col-sm-6">
-                <p>Departure Date To:</p>
-
-                {% if date_to %}
-                    <input name="date_to" id="date_to" type="date" value="{{ date_to.pop }}">
-                {% else %}
-                    <input name="date_to" id="date_to" type="date">
-                {% endif %}
-
+            <div class="row">
+                <div class="col-sm-4">
+                    <button type="button" id="search-button"
+                            onclick="onSearchClick()"  class="btn btn-outline-primary">Search</button>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-4">
-                <button type="button" id="search-button"
-                        onclick="onSearchClick()"  class="btn btn-outline-secondary">Search</button>
-            </div>
-        </div>
+
 
         {% for flight in flights %}
         <div class="flight-box" >
@@ -82,13 +89,14 @@
             </div>
 
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-12">
                 <button type="button" onclick="location.href='{% url 'flightmanager:flight_details' flight.id %}' "
                         class="btn btn-outline-info">Details</button>
               </div>
             </div>
         </div>
         {% endfor %}
+
 
 
     </div>

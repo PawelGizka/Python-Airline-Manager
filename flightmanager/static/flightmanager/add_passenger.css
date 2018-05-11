@@ -1,15 +1,8 @@
-#incorrect_login {
-    background-color: red;
-    padding: 2%;
-    border-radius: 25px;
-}
-
 .container {
     background-color: lightblue;
     padding: 2%;
     border-radius: 25px;
 }
-
 
 label {
     font-size: 18px;
