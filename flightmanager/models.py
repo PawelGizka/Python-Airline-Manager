@@ -22,12 +22,14 @@ class Flight(models.Model):
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE)
 
     def clean(self):
-        collision_departure = Flight.objects\
+        collision_departure = Flight.objects \
+            .exclude(id=self.id) \
             .filter(airplane_id__exact=self.airplane_id)\
             .filter(departure_date__lte=self.departure_date)\
             .filter(arrival_date__gte=self.departure_date)
 
         collision_arrival = Flight.objects \
+            .exclude(id=self.id) \
             .filter(airplane_id__exact=self.airplane_id) \
             .filter(departure_date__lte=self.arrival_date) \
             .filter(arrival_date__gte=self.arrival_date)
@@ -61,7 +63,16 @@ class Ticket(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
     passenger = models.ForeignKey(Passanger, on_delete=models.CASCADE)
     #max 30kg of luggage per passenger
-    luggage_weight = models.IntegerField(validators=[MaxValueValidator(30), MinValueValidator(0)])
+    luggage_weight = models.IntegerField()
+
+    def clean(self):
+        if self.luggage_weight < 0 or self.luggage_weight > 30:
+            raise ValidationError("Luggage weight should be between 0 and 30 kg")
+
+        flight = Flight.objects.get(pk=self.flight_id)
+        free_seats = flight.airplane.seat_number - flight.ticket_set.count()
+        if free_seats == 0:
+            raise ValidationError("No tickets available for this flight")
 
     def __str__(self):
         return "Ticket({}, {}, {})".format(str(self.flight_id), str(self.passenger_id), str(self.luggage_weight))

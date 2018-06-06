@@ -39,7 +39,6 @@ def index(request):
 
     return render(request, 'flightmanager/index.html', context)
 
-@login_required
 def flight_details(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
     free_seats = flight.airplane.seat_number - flight.ticket_set.count()
@@ -52,7 +51,7 @@ def flight_details(request, flight_id):
 def add_passanger_form(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
     passangers = Passanger.objects.all()
-    return render(request, 'flightmanager/add_passanger.html', {'flight': flight, 'passangers': passangers})
+    return render(request, 'flightmanager/add_passanger.html', {'flight': flight, 'passangers': passangers, 'validation_error': False})
 
 def no_tickets(request):
     return render(request, 'flightmanager/no_tickets.html')
@@ -61,22 +60,21 @@ def no_tickets(request):
 @transaction.atomic
 def add_passanger(request, flight_id):
     flight = get_object_or_404(Flight, pk=flight_id)
-    free_seats = flight.airplane.seat_number - flight.ticket_set.count()
-    if free_seats == 0:
-        return HttpResponseRedirect(reverse('flightmanager:no_tickets'))
-    else:
-        passanger_id = request.POST['select']
-        passanger = get_object_or_404(Passanger, pk=passanger_id)
-        luggage_weight = request.POST['luggage_weight']
-        new_ticket = Ticket(flight_id=flight_id, passenger=passanger, luggage_weight=luggage_weight)
 
-        try:
-            new_ticket.full_clean()
-        except ValidationError as e:
-            return HttpResponseBadRequest(e.messages)
+    passanger_id = request.POST['select']
+    passanger = get_object_or_404(Passanger, pk=passanger_id)
+    luggage_weight = request.POST['luggage_weight']
+    new_ticket = Ticket(flight_id=flight_id, passenger=passanger, luggage_weight=luggage_weight)
 
-        new_ticket.save()
-        return HttpResponseRedirect(reverse('flightmanager:flight_details', args=(flight_id,)))
+    try:
+        new_ticket.full_clean()
+    except ValidationError as e:
+        passangers = Passanger.objects.all()
+        context = {'flight': flight, 'passangers': passangers, 'validation_error': True, 'errors': e.messages}
+        return render(request, 'flightmanager/add_passanger.html', context)
+
+    new_ticket.save()
+    return HttpResponseRedirect(reverse('flightmanager:flight_details', args=(flight_id,)))
 
 def login_form(request):
     next = request.GET.getlist('next')

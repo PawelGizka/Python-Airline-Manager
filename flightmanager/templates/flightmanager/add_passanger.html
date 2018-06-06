@@ -25,6 +25,12 @@
     <form id="add_user" action="{% url 'flightmanager:add_passanger' flight.id %}" method="post">
         {% csrf_token %}
 
+        {% if validation_error %}
+            {% for error in errors %}
+                <h3>{{ error }}</h3>
+            {% endfor %}
+        {% endif %}
+
         <div class="row">
 
             <div class="col-sm-6">
