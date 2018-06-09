@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from flightmanager.models import Airplane, Flight, Passanger, Ticket
+from flightmanager.models import Airplane, Flight, Passanger, Ticket, Crew, CrewMember
 from datetime import datetime, timedelta
 from django.utils import timezone
 from random import randint
@@ -22,14 +22,25 @@ class Command(BaseCommand):
                     'Paris', 'Barcelona', 'Budapeszt', 'Praga']
 
         #generate 50 airplanes
-        for airplane_num in range(50):
+        for airplane_num in range(10):
             seat_number = 20 + airplane_num*4
             airplane = Airplane(registration_number="SP-A" + str(airplane_num), seat_number=seat_number)
             airplane.full_clean()
             airplane.save()
 
+            crew = Crew(captain_name="John-" + str(airplane_num), captain_surname="Smith-" + str(airplane_num))
+            crew.full_clean()
+            crew.save()
+
+            for crew_member_number in range(5):
+                crew_member = CrewMember(name="MemberName-" + str(crew_member_number),
+                                        surname="MemberSurname-" + str(crew_member_number),
+                                        crew=crew)
+                crew_member.full_clean()
+                crew_member.save()
+
             #generate 50 flights per airplane
-            for flight_num in range(50):
+            for flight_num in range(10):
                 departure_date = timezone.now() + timedelta(days=flight_num)
                 arrival_date = departure_date + timedelta(hours=5)
 
@@ -40,7 +51,7 @@ class Command(BaseCommand):
 
                 flight = Flight(departure_date=departure_date, arrival_date=arrival_date,
                                 departure_airport=airports[departure_index], arrival_airport=airports[arrival_index],
-                                airplane=airplane)
+                                airplane=airplane, crew=crew)
 
                 flight.full_clean()
                 flight.save()
