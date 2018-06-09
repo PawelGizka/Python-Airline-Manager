@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add passanger</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="add_crew.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="add_crew.js"></script>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>Add new crew</h1>
+</div>
+
+
+<div class="container" >
+
+    <h2 id="error"></h2>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="captain_name">Captain Name:</label>
+        </div>
+
+        <div class="col-sm-6">
+            <input name="captain_name" id="captain_name" type="text">
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6">
+            <label for="captain_surname">Captain Surname:</label>
+        </div>
+
+        <div class="col-sm-6">
+            <input name="captain_surname" id="captain_surname" type="text">
+        </div>
+    </div>
+
+    <h3>Add crew members:</h3>
+
+    <div id="crew-members-div">
+
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="addMember();"
+              class="btn btn-secondary ">New member</button>
+    </div>
+
+
+    <div class="row">
+        <button type="button" onclick="addCrew();"
+              class="btn btn-primary ">Add Crew</button>
+    </div>
+
+
+
+
+</div>
+
+</body>
+</html>

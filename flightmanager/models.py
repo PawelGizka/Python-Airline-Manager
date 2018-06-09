@@ -5,6 +5,20 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 # Create your models here.
+
+class Crew(models.Model):
+    captain_name = models.CharField(max_length=50, blank=False)
+    captain_surname = models.CharField(max_length=50, blank=False)
+
+    class Meta:
+        unique_together = ('captain_name', 'captain_surname',)
+
+class CrewMember(models.Model):
+    name = models.CharField(max_length=50)
+    surname = models.CharField(max_length=50)
+    crew = models.ForeignKey(Crew, on_delete=models.CASCADE)
+
+
 class Airplane(models.Model):
     registration_number = models.CharField(max_length=10)
     #max number of seats for airbus a380-800
@@ -20,6 +34,7 @@ class Flight(models.Model):
     departure_airport = models.CharField(max_length=20)
     arrival_airport = models.CharField(max_length=20)
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE)
+    crew = models.ForeignKey(Crew, on_delete=models.CASCADE, blank=True, null=True)
 
     def clean(self):
         collision_departure = Flight.objects \
@@ -42,6 +57,21 @@ class Flight(models.Model):
 
         if self.arrival_date < self.departure_date:
             raise ValidationError('Flight can not have earlier arrival than departure date')
+
+        collision_departure_crew = Flight.objects \
+            .exclude(id=self.id) \
+            .filter(crew_id__exact=self.crew_id) \
+            .filter(departure_date__lte=self.departure_date) \
+            .filter(arrival_date__gte=self.departure_date)
+
+        collision_arrival_crew = Flight.objects \
+            .exclude(id=self.id) \
+            .filter(crew_id__exact=self.crew_id) \
+            .filter(departure_date__lte=self.arrival_date) \
+            .filter(arrival_date__gte=self.arrival_date)
+
+        if collision_departure_crew or collision_arrival_crew:
+            raise ValidationError('There is other flight at the same time with the same crew. Please choose other crew')
 
     def __str__(self):
         return "Flight({}, {}, {}, {}, {})"\

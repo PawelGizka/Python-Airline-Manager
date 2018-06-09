@@ -1,0 +1,23 @@
+p {
+    font-size: 18px;
+    font-family: "DejaVu Sans";
+}
+
+.btn {
+    margin-top: 2%;
+}
+
+.row {
+    margin: auto;
+}
+
+button {
+    margin: auto;
+}
+
+.crew-div {
+    background-color: lightcyan;
+    padding: 2%;
+    border-radius: 25px;
+    margin-top: 3%;
+}

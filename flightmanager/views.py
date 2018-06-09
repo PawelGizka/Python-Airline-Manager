@@ -1,17 +1,22 @@
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.template import loader
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+import json
 
 from django.core import serializers
 # Create your views here.
 from django.http import HttpResponse
 from django.db import transaction
 
-from .models import Flight, Passanger, Ticket
+from .models import Flight, Passanger, Ticket, Crew, CrewMember
 from datetime import datetime
 
 import logging
@@ -108,5 +113,55 @@ def do_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('flightmanager:index'))
 
+@require_POST
+@csrf_exempt
+def do_ajax_login(request):
+    if 'username' not in request.POST or 'password' not in request.POST:
+        raise PermissionDenied
 
+    user = authenticate(username=request.POST['username'], password=request.POST['password'])
+    if user is not None:
+        return HttpResponse()
+    else:
+        return HttpResponseForbidden()
 
+@csrf_exempt
+def get_crews(request):
+    crews = Crew.objects.prefetch_related('crewmember_set').all()
+    crews_parsed = []
+    for crew in crews:
+        crews_parsed.append({'captain_name': crew.captain_name,
+                             'captain_surname': crew.captain_surname,
+                             'members': list(crew.crewmember_set.values('name', 'surname'))})
+
+    return JsonResponse({'crews': list(crews_parsed)})
+
+@require_POST
+@csrf_exempt
+def add_crew(request):
+    if 'username' not in request.POST or 'password' not in request.POST:
+        raise PermissionDenied
+
+    user = authenticate(username=request.POST['username'], password=request.POST['password'])
+    if user is None:
+        raise PermissionDenied
+
+    crew = Crew(captain_name=request.POST['captainName'], captain_surname=request.POST['captainSurname'])
+
+    try:
+        crew.full_clean()
+    except ValidationError as e:
+        parssed = ""
+        for message in e.messages:
+            parssed = parssed + " " + message
+
+        return HttpResponseForbidden(parssed)
+
+    crew.save()
+
+    for member_json in request.POST.getlist('members[]'):
+        member = json.loads(member_json)
+        if 'name' in member and 'surname' in member:
+            CrewMember(name=member['name'], surname=member['surname'], crew=crew).save()
+
+    return HttpResponse()
