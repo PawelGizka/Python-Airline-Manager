@@ -17,7 +17,7 @@
     <h1>Flight Details</h1>
 
     {% if is_user_authenticated %}
-        <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
+        <button id="logout-button" type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
           class="btn btn-primary">Logout</button>
     {% endif %}
 

@@ -87,7 +87,7 @@ function displayAssignments(res) {
                 
                 <div class="row">
                   <div class="col-sm-12">
-                    <button type="button" onclick="location.href='manage_assignment.html?flight=${flight.id}' "
+                    <button id="manage-crew-button-${flight.id}" type="button" onclick="location.href='manage_assignment.html?flight=${flight.id}' "
                             class="btn btn-outline-info">Manage Crew</button>
                   </div>
                 </div>

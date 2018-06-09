@@ -39,7 +39,7 @@ function displayCrews(res) {
     for (let i in res.crews) {
         let crew = res.crews[i];
 
-        $("#select").append(`<option value="${crew.id}">Captian: ${crew.captain_name} ${crew.captain_surname}</option>`)
+        $("#select").append(`<option id="option-${crew.id}" value="${crew.id}">Captian: ${crew.captain_name} ${crew.captain_surname}</option>`)
     }
 }
 

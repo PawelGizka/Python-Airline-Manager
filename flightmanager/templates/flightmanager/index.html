@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
         {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'flightmanager/index.css' %}" />
-        <script src="{% static 'flightmanager/index.js' %}"/>
+        <script src="{% static 'flightmanager/index.js' %}"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -22,14 +22,14 @@
         <h1>Flight Manager</h1>
 
         {% if is_user_authenticated %}
-            <button type="button" onclick="location.href='{% url 'flightmanager:logout' %}'"
+            <button type="button" id="logout-button" onclick="location.href='{% url 'flightmanager:logout' %}'"
               class="btn btn-primary ">Logout</button>
         {% else %}
-            <button type="button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
+            <button type="button" id="login-button" onclick="location.href='{% url 'flightmanager:login_form' %}'"
               class="btn btn-primary ">Login</button>
         {% endif %}
 
-        <button type="button" onclick="location.href='static/crewmanager/index.html'"
+        <button id="manage-crews-button" type="button" onclick="location.href='/static/crewmanager/index.html'"
               class="btn btn-primary ">Manage Crews & Flight assignments</button>
 
     </div>
@@ -93,7 +93,7 @@
 
             <div class="row">
               <div class="col-sm-12">
-                <button type="button" onclick="location.href='{% url 'flightmanager:flight_details' flight.id %}' "
+                <button type="button" id="details-{{ flight.id }}" onclick="location.href='{% url 'flightmanager:flight_details' flight.id %}' "
                         class="btn btn-outline-info">Details</button>
               </div>
             </div>

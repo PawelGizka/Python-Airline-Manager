@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.contrib.auth.models import User
 from flightmanager.models import Airplane, Flight, Passanger, Ticket, Crew, CrewMember
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -8,6 +9,48 @@ class Command(BaseCommand):
     help = 'Generates sample data'
 
     def handle(self, *args, **options):
+        User.objects.create_user(username='sans', password='sans')
+
+        airplane1 = Airplane(registration_number="SP-A", seat_number=20)
+        airplane1.full_clean()
+        airplane1.save()
+
+        airplane2 = Airplane(registration_number="SP-B", seat_number=20)
+        airplane2.full_clean()
+        airplane2.save()
+
+        crew = Crew(captain_name="John", captain_surname="Smith")
+        crew.full_clean()
+        crew.save()
+
+        departure_date = timezone.now()
+        arrival_date = departure_date + timedelta(hours=5)
+
+        # fligh1 and flight2 in the same time
+        flight1 = Flight(departure_date=departure_date, arrival_date=arrival_date,
+                         departure_airport="Warsaw", arrival_airport="Rzeszow",
+                         airplane=airplane1, crew=crew)
+
+        flight1.full_clean()
+        flight1.save()
+
+        flight2 = Flight(departure_date=departure_date, arrival_date=arrival_date,
+                         departure_airport="London", arrival_airport="Lublin",
+                         airplane=airplane2)  # without crew
+
+        flight2.full_clean()
+        flight2.save()
+
+        flight3 = Flight(departure_date=departure_date + timedelta(days=2),
+                         arrival_date=arrival_date + timedelta(days=3),
+                         departure_airport="Warsaw", arrival_airport="Rzeszow",
+                         airplane=airplane2)  # without crew
+
+        flight3.full_clean()
+        flight3.save()
+
+
+        '''
         passenger_ids = []
 
         for i in range(100):
@@ -65,4 +108,4 @@ class Command(BaseCommand):
                     ticket.save()
 
             self.stdout.write("generated data for aircraft number " + str(airplane_num))
-
+        '''
