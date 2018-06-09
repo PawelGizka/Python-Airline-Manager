@@ -1,0 +1,28 @@
+p {
+    font-size: 18px;
+    font-family: "DejaVu Sans";
+}
+
+.btn {
+    margin-top: 2%;
+}
+
+#search-button {
+    margin-top: 10%;
+}
+
+.flight-box {
+    margin-top: 5%;
+}
+
+#search-area {
+    background-color: lightblue;
+    padding: 2%;
+    border-radius: 25px;
+}
+
+.flight-box {
+    background-color: lightcyan;
+    padding: 2%;
+    border-radius: 25px;
+}

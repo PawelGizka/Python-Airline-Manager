@@ -1,7 +1,6 @@
 window.onunload = function(){};
 $(document).ready(function() {
     display();
-    alert("dizplay")
 });
 
 

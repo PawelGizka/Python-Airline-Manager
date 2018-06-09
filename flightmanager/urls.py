@@ -16,4 +16,6 @@ urlpatterns = [
     path('ajax/login/', views.do_ajax_login, name='ajax_login'),
     path('ajax/get_crews/', views.get_crews, name='ajax_get_crews'),
     path('ajax/add_crew/', views.add_crew, name='ajax_add_crew'),
+    path('ajax/get_assignments/', views.get_assignments, name='ajax_get_assignments'),
+    path('ajax/assign/', views.assign, name='ajax_assign'),
 ]

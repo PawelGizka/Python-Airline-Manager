@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from django.db import transaction
 
 from .models import Flight, Passanger, Ticket, Crew, CrewMember
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import logging
 logger = logging.getLogger(__name__)
@@ -130,9 +130,11 @@ def get_crews(request):
     crews = Crew.objects.prefetch_related('crewmember_set').all()
     crews_parsed = []
     for crew in crews:
-        crews_parsed.append({'captain_name': crew.captain_name,
-                             'captain_surname': crew.captain_surname,
-                             'members': list(crew.crewmember_set.values('name', 'surname'))})
+        crews_parsed.append({
+            'id': crew.id,
+            'captain_name': crew.captain_name,
+            'captain_surname': crew.captain_surname,
+            'members': list(crew.crewmember_set.values('name', 'surname'))})
 
     return JsonResponse({'crews': list(crews_parsed)})
 
@@ -163,5 +165,72 @@ def add_crew(request):
         member = json.loads(member_json)
         if 'name' in member and 'surname' in member:
             CrewMember(name=member['name'], surname=member['surname'], crew=crew).save()
+
+    return HttpResponse()
+
+@csrf_exempt
+def get_assignments(request):
+    flights = Flight.objects
+    date = request.GET.getlist('date')
+
+    if date:
+        try:
+            parsed_date = datetime.strptime(date[0], '%Y-%m-%d')
+            end_date = parsed_date + timedelta(days=1)
+            flights = flights.filter(departure_date__gte=parsed_date).filter(departure_date__lte=end_date)
+        except (ValueError):
+            pass
+
+
+    flights = flights.select_related('crew').prefetch_related('crew__crewmember_set').all()
+    flights_parsed = []
+    for flight in flights:
+        if flight.crew:
+            flights_parsed.append({
+                'id': flight.id,
+                'from': flight.departure_airport,
+                'to': flight.arrival_airport,
+                'crew': {
+                    'captain_name': flight.crew.captain_name,
+                    'captain_surname': flight.crew.captain_surname,
+                    'members': list(flight.crew.crewmember_set.values('name', 'surname'))
+                }
+            })
+        else:
+            flights_parsed.append({
+                'id': flight.id,
+                'from': flight.departure_airport,
+                'to': flight.arrival_airport
+            })
+
+    return JsonResponse({'flights': list(flights_parsed)})
+
+@csrf_exempt
+def assign(request):
+    if 'username' not in request.POST or 'password' not in request.POST or \
+            'flightId' not in request.POST or 'crewId' not in request.POST:
+        raise PermissionDenied
+
+    user = authenticate(username=request.POST['username'], password=request.POST['password'])
+    if user is None:
+        raise PermissionDenied
+
+    flight_id = request.POST['flightId']
+    crew_id = request.POST['crewId']
+    flight = get_object_or_404(Flight, pk=flight_id)
+    crew = get_object_or_404(Crew, pk=crew_id)
+
+    flight.crew = crew
+
+    try:
+        flight.full_clean()
+    except ValidationError as e:
+        parssed = ""
+        for message in e.messages:
+            parssed = parssed + " " + message
+
+        return HttpResponseForbidden(parssed)
+
+    flight.save()
 
     return HttpResponse()
